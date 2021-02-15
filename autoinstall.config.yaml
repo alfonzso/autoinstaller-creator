@@ -1,0 +1,31 @@
+#cloud-config
+autoinstall:
+  apt:
+    geoip: true
+    preserve_sources_list: false
+    primary:
+    - arches: [amd64, i386]
+      uri: http://hu.archive.ubuntu.com/ubuntu
+    - arches: [default]
+      uri: http://ports.ubuntu.com/ubuntu-ports
+  identity:
+    hostname: k8s-wannabe
+    password: $6$X/rLB/BbkccYMf61$QFcxTazvsVxrYDOgmcM4j7w3CoilujvuE56jNg/TCY1J7jdicv87WQBZCNF98enCDQyrq.VZScJOC5ehBceJv.,
+    username: admin
+  keyboard:
+    layout: hu
+    variant: hu
+  locale: hu_HU
+  packages:
+  - vim-
+  - htop
+  - iotop
+  ssh:
+    install-server: true
+    allow-pw: false
+    authorized-keys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEA5ONLts1n0YmGE4R8VOVw3cli9b9Ssf7Og7XDT5h2779YGwTCBgBH5E8ZAT/27YEQ0FhdllUOTEmdnyu2XIPmV717CEQEBtji9x9sEGBzBlU6g4BHOLrZQBRXicpc3yfk+zeRSgKPXnDH1LB2j9rmQNdCY/JyHxHoxEE1WuDIfEry4c9LHOcqv+Ft6kBs57i7zTF+MoyyaaN87UNqYHKVaC9O+xfH/9+Pe4DaJa4nSJxGz50bk9gaLnBaG5dNkQkpCwaevo3wKF3KB3sSPIhjJHYbZIt2QiXiZjcP8EecUJ9cTfrG0IHEmqx0PnWaxETaCIAS+zAyOFeMxcaD4UHyEQ== alfoldi_open_pub
+  storage:
+    layout:
+      name: ubuntu-lvm
+  version: 1
