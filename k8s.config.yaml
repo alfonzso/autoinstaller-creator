@@ -10,8 +10,10 @@ autoinstall:
   #     uri: http://ports.ubuntu.com/ubuntu-ports
   identity:
     hostname: k8s-wannabe
+    # echo fafa | mkpasswd -m sha-512 -s
     # password: "$6$X/rLB/BbkccYMf61$QFcxTazvsVxrYDOgmcM4j7w3CoilujvuE56jNg/TCY1J7jdicv87WQBZCNF98enCDQyrq.VZScJOC5ehBceJv."
-    password: "$6$exDY1mhS4KUYCE/2$zmn9ToZwTKLhCw.b4/b.ZRTIZM30JZ4QrOQ2aOXJ8yk96xpcCof0kxKwuX1kqLG/ygbJ1f8wxED22bTL4F46P0"
+    # password: "$6$exDY1mhS4KUYCE/2$zmn9ToZwTKLhCw.b4/b.ZRTIZM30JZ4QrOQ2aOXJ8yk96xpcCof0kxKwuX1kqLG/ygbJ1f8wxED22bTL4F46P0"
+    password: "$6$lTRfUI2RaI$RzKot9tnRsalQPOOdNciyj3yt/MBR3bsOEbE8tn/Z1p4VpcH1MZKbyIJeaAtHpjrIv8UleqkD9dABygwJTMdy."
     username: admin
   keyboard:
     layout: hu
