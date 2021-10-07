@@ -1,19 +1,24 @@
-ISO_NAME=ubuntu-20.04.2-live-server-amd64
+ISO_NAME=ubuntu-20.04.3-live-server-amd64
 # https://releases.ubuntu.com/20.04/ubuntu-20.04.2-live-server-amd64.iso
 
 WORKDIR=$(pwd)/workspace
 
+[[ ! -d $WORKDIR ]] && mkdir $WORKDIR
+
 # cp default.config.yaml $WORKDIR
 cp k8s.config.yaml     $WORKDIR
 
-docker run -it --rm --name autoinstaller -v $WORKDIR:$WORKDIR alpine sh -c "
-apk add --update p7zip syslinux xorriso bash wget
+docker run -d --rm --name autoinstaller -v $WORKDIR:$WORKDIR alpine
 
+docker exec -it autoinstaller sh -c "
+apk add --update p7zip syslinux xorriso bash wget
+"
+
+docker exec -it autoinstaller bash -c "
 cd $WORKDIR
 rm -rf iso || true
 sleep 5
 
-bash -c \"
 set -ex
 
 # mkdir cubic/ || true
@@ -49,8 +54,8 @@ xorriso -as mkisofs -r \
   -isohybrid-mbr /usr/share/syslinux/isohdpfx.bin  \
   iso/boot iso
 
-\"
 "
+docker rm -f autoinstaller || true
 
 # apk add --update p7zip syslinux xorriso
 # mkdir -p iso/nocloud
