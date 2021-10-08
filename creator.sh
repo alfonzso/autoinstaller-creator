@@ -36,8 +36,8 @@ touch iso/nocloud/meta-data
 cp k8s.config.yaml       iso/nocloud/user-data
 
 rm -rf 'iso/[BOOT]/'
-sed -i 's|---|autoinstall ds=nocloud\\\;s=/cdrom/nocloud/ ---|g' iso/boot/grub/grub.cfg
-sed -i 's|---|autoinstall ds=nocloud;s=/cdrom/nocloud/ ---|g' iso/isolinux/txt.cfg
+sed -i 's|---|fsck.mode=skip autoinstall ds=nocloud\\\;s=/cdrom/nocloud/ ---|g' iso/boot/grub/grub.cfg
+sed -i 's|---|fsck.mode=skip autoinstall ds=nocloud;s=/cdrom/nocloud/ ---|g' iso/isolinux/txt.cfg
 
 # md5sum iso/README.diskdefines > iso/md5sum.txt
 # sed -i 's|iso/|./|g' iso/md5sum.txt

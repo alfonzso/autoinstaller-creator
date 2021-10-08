@@ -33,8 +33,17 @@ autoinstall:
       name: lvm
       match:
         ssd: yes
+  # reporting:
+  #   central:
+  #     type: rsyslog
+  #     destination: "@192.168.1.101"
   reporting:
-    central:
-      type: rsyslog
-      destination: "@192.168.1.101"
+    hook:
+      type: webhook
+      endpoint: http://192.168.1.101:5000/webhook
+      consumer_key: "ck_foo"
+      consumer_secret: "cs_foo"
+      token_key: "tk_foo"
+      token_secret: "tk_secret"
+      level: INFO
   version: 1
