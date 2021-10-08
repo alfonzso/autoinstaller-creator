@@ -8,7 +8,9 @@ WORKDIR=$(pwd)/workspace
 # cp default.config.yaml $WORKDIR
 cp k8s.config.yaml     $WORKDIR
 
-docker run -d --rm --name autoinstaller -v $WORKDIR:$WORKDIR alpine
+docker rm -f autoinstaller || true
+docker run -d --rm --name autoinstaller -v $WORKDIR:$WORKDIR alpine sh -c 'tail -f /dev/null'
+sleep 3
 
 docker exec -it autoinstaller sh -c "
 apk add --update p7zip syslinux xorriso bash wget

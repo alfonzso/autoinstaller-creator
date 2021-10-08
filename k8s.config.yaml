@@ -31,4 +31,10 @@ autoinstall:
   storage:
     layout:
       name: lvm
+      match:
+        ssd: yes
+  reporting:
+    central:
+      type: rsyslog
+      destination: "@192.168.1.101"
   version: 1
