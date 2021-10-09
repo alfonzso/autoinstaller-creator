@@ -20,7 +20,7 @@ autoinstall:
     variant: hu
   locale: hu_HU
   packages:
-  - vim-
+  - vim
   - htop
   - iotop
   ssh:
