@@ -9,25 +9,29 @@ autoinstall:
   #   - arches: [default]
   #     uri: http://ports.ubuntu.com/ubuntu-ports
   identity:
-    hostname: k8s-wannabe
+    hostname:
     # echo fafa | mkpasswd -m sha-512 -s
     # password: "$6$X/rLB/BbkccYMf61$QFcxTazvsVxrYDOgmcM4j7w3CoilujvuE56jNg/TCY1J7jdicv87WQBZCNF98enCDQyrq.VZScJOC5ehBceJv."
     # password: "$6$exDY1mhS4KUYCE/2$zmn9ToZwTKLhCw.b4/b.ZRTIZM30JZ4QrOQ2aOXJ8yk96xpcCof0kxKwuX1kqLG/ygbJ1f8wxED22bTL4F46P0"
-    password: "$6$lTRfUI2RaI$RzKot9tnRsalQPOOdNciyj3yt/MBR3bsOEbE8tn/Z1p4VpcH1MZKbyIJeaAtHpjrIv8UleqkD9dABygwJTMdy."
-    username: admin
+    # password: "$6$lTRfUI2RaI$RzKot9tnRsalQPOOdNciyj3yt/MBR3bsOEbE8tn/Z1p4VpcH1MZKbyIJeaAtHpjrIv8UleqkD9dABygwJTMdy."
+    password: "$6$1eh7bcxXgqIcA517$KJysFy.us8LgqO2xB8Sz8WTxGE1bpT4M12GOR9Te2y3UKX2pxVKtq/UDYEFeoD7YMm1ciK992EjAfixTzF4ZD1"
+    username: smapplab
   keyboard:
     layout: hu
     variant: hu
   locale: hu_HU
   packages:
+  - curl
   - vim
   - htop
   - iotop
+  - tmux
   ssh:
     install-server: true
     allow-pw: false
     authorized-keys:
     - ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEA5ONLts1n0YmGE4R8VOVw3cli9b9Ssf7Og7XDT5h2779YGwTCBgBH5E8ZAT/27YEQ0FhdllUOTEmdnyu2XIPmV717CEQEBtji9x9sEGBzBlU6g4BHOLrZQBRXicpc3yfk+zeRSgKPXnDH1LB2j9rmQNdCY/JyHxHoxEE1WuDIfEry4c9LHOcqv+Ft6kBs57i7zTF+MoyyaaN87UNqYHKVaC9O+xfH/9+Pe4DaJa4nSJxGz50bk9gaLnBaG5dNkQkpCwaevo3wKF3KB3sSPIhjJHYbZIt2QiXiZjcP8EecUJ9cTfrG0IHEmqx0PnWaxETaCIAS+zAyOFeMxcaD4UHyEQ== alfoldi_open_pub
+    - ssh-rsa ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCjbteUxDM+6bkQRaBapNWVKxp1a7jbHwYJbV62mCCTf0iX1ZVmf0gz69nCyZ5tzOTq0Yp5eUN4WO0yoC1fV6SYd1XxrtQbPYOpBqpWDjdCVQr3WnX7NjzBSqsgrPUH1AQjLQ33i8OcfuzbDPVjmUdSVEG5CYQ5Gy4vwTy2IVwfWLldxH8tbnLbq5LVAqccBpi0S/W7KnugLt4hFW4ob6THom/S+xuVjaidQYzvmBODifXXQx8PC4iVhSLxfZb0vTqbSGPyq0udorUIdTw1h+/GKV2f8A11XYZefG6tz42xi2xQIf8sUz1YiCKPUVxEJ8FoyrelX8cs+8Ya+QOE6s+0hssdFxaOEIjMr933R5CYD/JaY4PhMNK4Fyu2e8Jf+7naiFoqeh6QDV8YgyVj0Fy9O43IzHW1xQxlPmBRbsgCgVCOpovZdz+WPIcVo5glzyo/PBGMv0Cy2NFeMt8jC7e+g6gQ8Vr3ddhIlTpDsZV1aS7JS3agOCxn/RvjnhYR7qM= pedoczy@mac0017578
   storage:
     layout:
       name: lvm
@@ -37,13 +41,13 @@ autoinstall:
   #   central:
   #     type: rsyslog
   #     destination: "@192.168.1.101"
-  reporting:
-    hook:
-      type: webhook
-      endpoint: http://192.168.1.101:5000/webhook
-      consumer_key: "ck_foo"
-      consumer_secret: "cs_foo"
-      token_key: "tk_foo"
-      token_secret: "tk_secret"
-      level: INFO
+  # reporting:
+  #   hook:
+  #     type: webhook
+  #     endpoint: http://192.168.1.101:5000/webhook
+  #     consumer_key: "ck_foo"
+  #     consumer_secret: "cs_foo"
+  #     token_key: "tk_foo"
+  #     token_secret: "tk_secret"
+  #     level: INFO
   version: 1

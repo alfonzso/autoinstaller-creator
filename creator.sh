@@ -1,22 +1,19 @@
-ISO_NAME=ubuntu-20.04.3-live-server-amd64
+UBU_VERSION=22.04.2
+ISO_NAME=ubuntu-$UBU_VERSION-live-server-amd64
+SERVER_PATH=https://releases.ubuntu.com/$UBU_VERSION/$ISO_NAME.iso
 # https://releases.ubuntu.com/20.04/ubuntu-20.04.2-live-server-amd64.iso
+# https://releases.ubuntu.com/22.04.2/ubuntu-22.04.2-live-server-amd64.iso
 
 WORKDIR=$(pwd)/workspace
 
 [[ ! -d $WORKDIR ]] && mkdir $WORKDIR
 
 # cp default.config.yaml $WORKDIR
-cp k8s.config.yaml     $WORKDIR
+cp k8s.config.yaml $WORKDIR
 
 docker rm -f autoinstaller || true
-docker run -d --rm --name autoinstaller -v $WORKDIR:$WORKDIR alpine sh -c 'tail -f /dev/null'
-sleep 3
-
-docker exec -it autoinstaller sh -c "
+docker run -it --rm --name autoinstaller -v $WORKDIR:$WORKDIR frolvlad/alpine-bash bash -c "
 apk add --update p7zip syslinux xorriso bash wget
-"
-
-docker exec -it autoinstaller bash -c "
 cd $WORKDIR
 rm -rf iso || true
 sleep 5
@@ -26,7 +23,7 @@ set -ex
 # mkdir cubic/ || true
 # cd cubic
 
-[[ ! -f ${ISO_NAME}.iso ]] && wget https://releases.ubuntu.com/20.04/${ISO_NAME}.iso
+[[ ! -f ${ISO_NAME}.iso ]] && wget $SERVER_PATH
 
 mkdir -p iso/nocloud
 7z x ${ISO_NAME}.iso -oiso
@@ -57,7 +54,7 @@ xorriso -as mkisofs -r \
   iso/boot iso
 
 "
-docker rm -f autoinstaller || true
+# docker rm -f autoinstaller || true
 
 # apk add --update p7zip syslinux xorriso
 # mkdir -p iso/nocloud
