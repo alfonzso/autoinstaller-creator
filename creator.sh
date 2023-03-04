@@ -11,17 +11,17 @@ WORKDIR=$(pwd)/workspace
 # cp default.config.yaml $WORKDIR
 cp k8s.config.yaml $WORKDIR
 
+# create a dummy alpine iso creator image
+docker build -t alp-iso-creator .
+
 docker rm -f autoinstaller || true
-docker run -it --rm --name autoinstaller -v $WORKDIR:$WORKDIR frolvlad/alpine-bash bash -c "
-apk add --update p7zip syslinux xorriso bash wget
+docker run -it -e UID=$(id -u) -e GID=$(id -g) --rm --name autoinstaller -v $WORKDIR:$WORKDIR alp-iso-creator bash -c "
+set -e
+usermod -u $UID creator 2>/dev/null 1>&2 || true
+usermod -g $GID creator 2>/dev/null 1>&2 || true
+
 cd $WORKDIR
 rm -rf iso || true
-sleep 5
-
-set -ex
-
-# mkdir cubic/ || true
-# cd cubic
 
 [[ ! -f ${ISO_NAME}.iso ]] && wget $SERVER_PATH
 
@@ -32,59 +32,32 @@ touch iso/nocloud/meta-data
 # cp default.config.yaml iso/nocloud/user-data
 cp k8s.config.yaml       iso/nocloud/user-data
 
-rm -rf 'iso/[BOOT]/'
+mv 'iso/[BOOT]/' 'BOOT'
 sed -i 's|---|fsck.mode=skip autoinstall ds=nocloud\\\;s=/cdrom/nocloud/ ---|g' iso/boot/grub/grub.cfg
-sed -i 's|---|fsck.mode=skip autoinstall ds=nocloud;s=/cdrom/nocloud/ ---|g' iso/isolinux/txt.cfg
+# sed -i 's|---|fsck.mode=skip autoinstall ds=nocloud;s=/cdrom/nocloud/ ---|g' iso/isolinux/txt.cfg
 
 # md5sum iso/README.diskdefines > iso/md5sum.txt
 # sed -i 's|iso/|./|g' iso/md5sum.txt
 
-cd iso
-find -type f -print0 |  xargs -0 md5sum | grep -v isolinux/boot.cat |  tee md5sum.txt
-cd ..
+# cd iso
+# find -type f -print0 |  xargs -0 md5sum | grep -v isolinux/boot.cat |  tee md5sum.txt
+# cd ..
 
 xorriso -as mkisofs -r \
   -V Ubuntu\ custom\ amd64 \
   -o ${ISO_NAME}-$(date +'%F--%H-%M-%S').iso \
-  -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot \
-  -boot-load-size 4 -boot-info-table \
-  -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot \
-  -isohybrid-gpt-basdat -isohybrid-apm-hfsplus \
-  -isohybrid-mbr /usr/share/syslinux/isohdpfx.bin  \
+  --grub2-mbr BOOT/1-Boot-NoEmul.img \
+  -partition_offset 16 \
+  --mbr-force-bootable \
+  -append_partition 2 28732ac11ff8d211ba4b00a0c93ec93b BOOT/2-Boot-NoEmul.img \
+  -appended_part_as_gpt \
+  -iso_mbr_part_type a2a0d0ebe5b9334487c068b6b72699c7 \
+  -c '/boot.catalog' \
+  -b '/boot/grub/i386-pc/eltorito.img' \
+  -no-emul-boot -boot-load-size 4 -boot-info-table --grub2-boot-info \
+  -eltorito-alt-boot \
+  -e '--interval:appended_partition_2:::' \
+  -no-emul-boot \
   iso/boot iso
 
 "
-# docker rm -f autoinstaller || true
-
-# apk add --update p7zip syslinux xorriso
-# mkdir -p iso/nocloud
-# 7z x ${ISO_NAME}.iso -oiso
-# touch iso/nocloud/meta-data
-
-# cat > iso/nocloud/user-data << 'EOF'
-# #cloud-config
-# autoinstall:
-#   version: 1
-#   identity:
-#     hostname: ubuntu-server
-#     # password is ubuntu
-#     password: "$6$exDY1mhS4KUYCE/2$zmn9ToZwTKLhCw.b4/b.ZRTIZM30JZ4QrOQ2aOXJ8yk96xpcCof0kxKwuX1kqLG/ygbJ1f8wxED22bTL4F46P0"
-#     username: ubuntu
-# EOF
-
-# rm -rf 'iso/[BOOT]/'
-# sed -i 's|---|autoinstall ds=nocloud\\\;s=/cdrom/nocloud/ ---|g' iso/boot/grub/grub.cfg
-# sed -i 's|---|autoinstall ds=nocloud;s=/cdrom/nocloud/ ---|g' iso/isolinux/txt.cfg
-
-# md5sum iso/README.diskdefines > iso/md5sum.txt
-# sed -i 's|iso/|./|g' iso/md5sum.txt
-
-# xorriso -as mkisofs -r \
-#   -V Ubuntu\ custom\ amd64 \
-#   -o ${ISO_NAME}-$(date +'%F--%H-%M-%S').iso \
-#   -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot \
-#   -boot-load-size 4 -boot-info-table \
-#   -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot \
-#   -isohybrid-gpt-basdat -isohybrid-apm-hfsplus \
-#   -isohybrid-mbr /usr/share/syslinux/isohdpfx.bin  \
-#   iso/boot iso
