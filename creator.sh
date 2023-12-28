@@ -1,24 +1,13 @@
-UBU_VERSION=22.04.2
-ISO_NAME=ubuntu-$UBU_VERSION-live-server-amd64
-SERVER_PATH=https://releases.ubuntu.com/$UBU_VERSION/$ISO_NAME.iso
-################################ https://releases.ubuntu.com/20.04/ubuntu-20.04.2-live-server-amd64.iso
-################################ https://releases.ubuntu.com/22.04.2/ubuntu-22.04.2-live-server-amd64.iso
+set -eu
 
-WORKDIR=$(pwd)/workspace
+: "${UID:?=> not set or empty}"
+: "${GID:?=> not set or empty}"
+: "${WORKDIR:?=> not set or empty}"
+: "${SERVER_PATH:?=> not set or empty}"
+: "${ISO_NAME:?=> not set or empty}"
 
-[[ ! -d $WORKDIR ]] && mkdir $WORKDIR
-
-################################ cp default.config.yaml $WORKDIR
-cp k8s.config.yaml $WORKDIR
-
-################################ create a dummy alpine iso creator image
-docker build -t alp-iso-creator .
-
-docker rm -f autoinstaller || true
-docker run -it -e UID=$(id -u) -e GID=$(id -g) --rm --name autoinstaller -v $WORKDIR:$WORKDIR alp-iso-creator bash -c "
-set -e
-usermod -u $UID creator 2>/dev/null 1>&2 || true
-usermod -g $GID creator 2>/dev/null 1>&2 || true
+usermod -u $UID creator 2> /dev/null 1>&2 || true
+usermod -g $GID creator 2> /dev/null 1>&2 || true
 
 cd $WORKDIR
 rm -rf iso || true
@@ -30,19 +19,13 @@ mkdir -p iso/nocloud
 7z x ${ISO_NAME}.iso -oiso
 touch iso/nocloud/meta-data
 
-################################ cp default.config.yaml iso/nocloud/user-data
-cp k8s.config.yaml       iso/nocloud/user-data
+cp k8s.config.yaml iso/nocloud/user-data
 
 mv 'iso/[BOOT]/' 'BOOT'
 sed -i 's|---|fsck.mode=skip autoinstall ds=nocloud\\\;s=/cdrom/nocloud/ ---|g' iso/boot/grub/grub.cfg
-################################ sed -i 's|---|fsck.mode=skip autoinstall ds=nocloud;s=/cdrom/nocloud/ ---|g' iso/isolinux/txt.cfg
 
-################################ md5sum iso/README.diskdefines > iso/md5sum.txt
-################################ sed -i 's|iso/|./|g' iso/md5sum.txt
+sed -i 's|set timeout=.*$|set timeout=5|g' iso/boot/grub/grub.cfg
 
-################################ cd iso
-################################ find -type f -print0 |  xargs -0 md5sum | grep -v isolinux/boot.cat |  tee md5sum.txt
-################################ cd ..
 
 xorriso -as mkisofs -r \
   -V Ubuntu\ custom\ amd64 \
@@ -60,5 +43,3 @@ xorriso -as mkisofs -r \
   -e '--interval:appended_partition_2:::' \
   -no-emul-boot \
   iso/boot iso
-
-"

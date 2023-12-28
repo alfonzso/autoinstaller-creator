@@ -1,5 +1,44 @@
 #cloud-config
+
 autoinstall:
+
+  shutdown: poweroff
+
+  updates: all
+
+  user-data:
+
+    # if pc is notebook, make it sure to disable lid action (like suspend when lid is closed)
+    # after this reboot needed
+    # or this sudo service systemd-logind restart
+    runcmd:
+      - |
+        sed -i \
+          -e 's|.*HandleLidSwitch=.*$|HandleLidSwitch=ignore|g' \
+          -e 's|.*LidSwitchIgnoreInhibited.*$|LidSwitchIgnoreInhibited=no|g' \
+          /etc/systemd/logind.conf
+
+
+    # runcmd:
+    #   - |
+    #     mkdir -p /etc/cloud/ || true
+    #     touch /etc/cloud/cloud-init.disabled
+    #     touch /home/admin/cloud-init.disabled
+    #     touch /opt/fafa.disabled
+
+    # power_state:
+    #   mode: poweroff
+    #   message: Byeeeeeeeee
+    #   condition: true
+
+    write_files:
+    - content: |
+        cloud_init_has_run
+      path: /cloud_init_flag
+    - content: |
+        # Disable cloud-init after successful install
+      path: /etc/cloud/cloud-init.disabled
+
   # apt:
   #   geoip: true
   #   preserve_sources_list: false
@@ -20,11 +59,12 @@ autoinstall:
     password: "$6$Bqh6e2XaWS/BP0oN$tIbGMdH.Ds/cnANOeWtQGs7jlslHkdhk2NB9Ydz7/cIJm8HHpsZjWbmFHQ7eqiR5zWSQwShR7NUVfA1Efkk0t1"
   keyboard:
     layout: hu
-    variant: hu
+    # variant: hu
   locale: hu_HU
+  # - vim
   packages:
   - curl
-  - vim
+  - neovim
   - htop
   - iotop
   - tmux
